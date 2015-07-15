@@ -7,6 +7,7 @@ var slackin = require('../node');
 program
 .version(pkg.version)
 .usage('[options] <slack-subdomain> <api-token>')
+.option('-h, --host <hostname>', 'Hostname to listen on [$HOSTNAME or any]', process.env.HOSTNAME || undefined)
 .option('-p, --port <port>', 'Port to listen on [$PORT or 3000]', process.env.PORT || 3000)
 .option('-c, --channels [<chan>]', 'One or more comma-separated channel names to allow single-channel guests [$SLACK_CHANNELS]', process.env.SLACK_CHANNELS)
 .option('-c, --channel <chan>', 'Single channel guest invite (deprecated) [$SLACK_CHANNEL]', process.env.SLACK_CHANNEL)
@@ -27,8 +28,9 @@ if (!program.channels && program.channel) {
   program.channels = program.channel;
 }
 
+var host = program.host;
 var port = program.port;
-slackin(program).listen(port, function(err){
+slackin(program).listen(port, host, function(err){
   if (err) throw err;
   if (!program.silent) console.log('%s – listening on *:%d', new Date, port);
 });
